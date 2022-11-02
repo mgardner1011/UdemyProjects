@@ -1,0 +1,14 @@
+{
+    "Facebook": {
+        "email": "fake@testemail.com",
+        "password": "3*Y+gkY5NUAr"
+    },
+    "Amazon": {
+        "email": "fake1@testemail.com",
+        "password": "SJ4!DRq*!74nUz+4"
+    },
+    "Google": {
+        "email": "fake2@testemail.com",
+        "password": "!$haU0$nc95wsd1"
+    }
+}
