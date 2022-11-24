@@ -4,9 +4,6 @@ import re
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
-SPOTIPY_CLIENT_ID = '4991e2d8434e47d2886fca57668b353e'
-SPOTIPY_CLIENT_SECRET = '5d6ba2c747ba4e718b16a675ae12c956'
-
 
 date = input('When do you want to travel to? (yyyy-mm-dd) ')
 
