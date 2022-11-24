@@ -1,0 +1,17 @@
+Index: .gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+--- /dev/null	(date 1668481963017)
++++ b/.gitignore	(date 1668481963017)
+@@ -0,0 +1,7 @@
++/.idea/inspectionProfiles/profiles_settings.xml
++/birthday_wishes/main.py
++/.idea/misc.xml
++/.idea/modules.xml
++/.idea/UdemyProjects.iml
++/.idea/vcs.xml
++/.idea/workspace.xml
