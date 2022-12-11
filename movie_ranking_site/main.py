@@ -93,7 +93,7 @@ def add():
 
 @app.route('/add_movie')
 def add_movie():
-    url = 'https://api.themoviedb.org/3/movie/' + request.args.get('id')
+    url = f'https://api.themoviedb.org/3/movie/{request.args.get("id")}'
     params = {
         'api_key': api_key,
         'language': 'en-US',
@@ -103,7 +103,7 @@ def add_movie():
                        year=int(response['release_date'].split('-')[0]),
                        description=response['overview'],
                        rating=response['vote_average'],
-                       img_url='https://image.tmdb.org/t/p/w500' + response['poster_path'])
+                       img_url=f'https://image.tmdb.org/t/p/w500{response["poster_path"]}')
     db.session.add(new_movie)
     db.session.commit()
     movie = Movies.query.filter_by(title=response['title']).first()
