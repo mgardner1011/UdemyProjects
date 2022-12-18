@@ -65,8 +65,7 @@ class Comment(db.Model):
     comment_author = relationship('User', back_populates='comments')
     parent_post = relationship('BlogPost', back_populates='comments')
 
-with app.app_context():
-    db.create_all()
+db.create_all()
 
 @login_manager.user_loader
 def load_user(user_id):
