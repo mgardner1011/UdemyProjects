@@ -148,8 +148,7 @@ def show_post(post_id):
                                   post_id=post_id)
             db.session.add(new_comment)
             db.session.commit()
-            return render_template("post.html", post=requested_post, logged_in=current_user.is_authenticated,
-                                   form=comment_form, comments=comments, post_id=post_id)
+            return redirect(url_for('show_post', post_id=post_id))
         else:
             flash('You must be logged in to comment.')
     return render_template("post.html", post=requested_post, logged_in=current_user.is_authenticated,
