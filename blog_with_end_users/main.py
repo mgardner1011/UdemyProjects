@@ -10,15 +10,11 @@ from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 from flask_gravatar import Gravatar
 from functools import wraps
 import os
-import smtplib
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 ckeditor = CKEditor(app)
 Bootstrap(app)
-
-MY_EMAIL = os.getenv('MY_EMAIL')
-EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
 
 gravatar = Gravatar(app,
                     size=100,
@@ -163,22 +159,22 @@ def show_post(post_id):
 def about():
     return render_template("about.html")
 
-
-@app.route("/contact", methods=['GET', 'POST'])
-def contact():
-    if request.method =='POST':
-        message = f"Name: {request.form.get('name')}\nEmail: {request.form.get('email')}" \
-                  f"\nPhone Number: {request.form.get('phone-number')}\nMessage: {request.form.get('message')}"
-        with smtplib.SMTP('smtp.gmail.com') as connection:
-            connection.starttls()
-            connection.login(user=MY_EMAIL, password=EMAIL_PASSWORD)
-            connection.sendmail(
-                from_addr=MY_EMAIL,
-                to_addrs='mgardner.pythontest@gmail.com',
-                msg=f'Subject:Blog Contact Request\n\n{message}.'
-            )
-            return render_template('contact.html', sent_message=True)
-    return render_template("contact.html")
+# TODO: work on a more sophisticated way to send email, and get contact me page to work
+# @app.route("/contact", methods=['GET', 'POST'])
+# def contact():
+#     if request.method =='POST':
+#         message = f"Name: {request.form.get('name')}\nEmail: {request.form.get('email')}" \
+#                   f"\nPhone Number: {request.form.get('phone-number')}\nMessage: {request.form.get('message')}"
+#         with smtplib.SMTP('smtp.gmail.com') as connection:
+#             connection.starttls()
+#             connection.login(user=MY_EMAIL, password=EMAIL_PASSWORD)
+#             connection.sendmail(
+#                 from_addr=MY_EMAIL,
+#                 to_addrs='mgardner.pythontest@gmail.com',
+#                 msg=f'Subject:Blog Contact Request\n\n{message}.'
+#             )
+#             return render_template('contact.html', sent_message=True)
+#     return render_template("contact.html")
 
 
 @app.route("/new-post", methods=['POST', 'GET'])
