@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, abort
+from flask import Flask, render_template, redirect, url_for, flash, abort, request
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from datetime import date
@@ -10,11 +10,15 @@ from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 from flask_gravatar import Gravatar
 from functools import wraps
 import os
+import smtplib
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 ckeditor = CKEditor(app)
 Bootstrap(app)
+
+MY_EMAIL = os.getenv('MY_EMAIL')
+EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
 
 gravatar = Gravatar(app,
                     size=100,
@@ -86,7 +90,7 @@ def admin_only(func):
 @app.route('/')
 def get_all_posts():
     posts = BlogPost.query.all()
-    return render_template("index.html", all_posts=posts, logged_in=current_user.is_authenticated)
+    return render_template("index.html", all_posts=posts)
 
 
 @app.route('/register', methods=['POST', 'GET'])
@@ -126,7 +130,7 @@ def login():
             return render_template('login.html', form=form)
         else:
             login_user(user)
-            return redirect(url_for('get_all_posts', logged_in=current_user.is_authenticated))
+            return redirect(url_for('get_all_posts'))
     return render_template("login.html", form=form)
 
 
@@ -151,18 +155,30 @@ def show_post(post_id):
             return redirect(url_for('show_post', post_id=post_id))
         else:
             flash('You must be logged in to comment.')
-    return render_template("post.html", post=requested_post, logged_in=current_user.is_authenticated,
+    return render_template("post.html", post=requested_post,
                            form=comment_form, comments=comments, post_id=post_id)
 
 
 @app.route("/about")
 def about():
-    return render_template("about.html", logged_in=current_user.is_authenticated)
+    return render_template("about.html")
 
 
-@app.route("/contact")
+@app.route("/contact", methods=['GET', 'POST'])
 def contact():
-    return render_template("contact.html", logged_in=current_user.is_authenticated)
+    if request.method =='POST':
+        message = f"Name: {request.form.get('name')}\nEmail: {request.form.get('email')}" \
+                  f"\nPhone Number: {request.form.get('phone-number')}\nMessage: {request.form.get('message')}"
+        with smtplib.SMTP('smtp.gmail.com') as connection:
+            connection.starttls()
+            connection.login(user=MY_EMAIL, password=EMAIL_PASSWORD)
+            connection.sendmail(
+                from_addr=MY_EMAIL,
+                to_addrs='mgardner.pythontest@gmail.com',
+                msg=f'Subject:Blog Contact Request\n\n{message}.'
+            )
+            return render_template('contact.html', sent_message=True)
+    return render_template("contact.html")
 
 
 @app.route("/new-post", methods=['POST', 'GET'])
@@ -181,7 +197,7 @@ def add_new_post():
         db.session.add(new_post)
         db.session.commit()
         return redirect(url_for("get_all_posts"))
-    return render_template("make-post.html", form=form, logged_in=current_user.is_authenticated)
+    return render_template("make-post.html", form=form)
 
 
 @app.route("/edit-post/<int:post_id>", methods=['POST', 'GET'])
@@ -201,9 +217,9 @@ def edit_post(post_id):
         post.img_url = edit_form.img_url.data
         post.body = edit_form.body.data
         db.session.commit()
-        return redirect(url_for("show_post", post_id=post.id, logged_in=current_user.is_authenticated))
+        return redirect(url_for("show_post", post_id=post.id))
 
-    return render_template("make-post.html", form=edit_form, logged_in=current_user.is_authenticated)
+    return render_template("make-post.html", form=edit_form)
 
 
 @app.route("/delete/<int:post_id>")
@@ -212,4 +228,4 @@ def delete_post(post_id):
     post_to_delete = BlogPost.query.get(post_id)
     db.session.delete(post_to_delete)
     db.session.commit()
-    return redirect(url_for('get_all_posts', logged_in=current_user.is_authenticated))
+    return redirect(url_for('get_all_posts'))
